@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ total_results }} Sublets Found - Pillow Housing{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-md-3 bg-light p-4">
+            <h5 class="mb-3">Filters</h5>
+            
+            <form method="get">
+                <!-- Location -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Location</label>
+                    <input type="text" name="location" class="form-control" value="{{ location }}" placeholder="City, School, or Zip">
+                </div>
+                
+                <!-- Duration -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Duration</label>
+                    <select name="duration" class="form-select">
+                        <option value="">Any Duration</option>
+                        <option value="fall" {% if duration == 'fall' %}selected{% endif %}>Fall Semester</option>
+                        <option value="spring" {% if duration == 'spring' %}selected{% endif %}>Spring Semester</option>
+                        <option value="summer" {% if duration == 'summer' %}selected{% endif %}>Summer</option>
+                        <option value="winter_break" {% if duration == 'winter_break' %}selected{% endif %}>Winter Break</option>
+                        <option value="spring_break" {% if duration == 'spring_break' %}selected{% endif %}>Spring Break</option>
+                        <option value="thanksgiving" {% if duration == 'thanksgiving' %}selected{% endif %}>Thanksgiving</option>
+                        <option value="full_year" {% if duration == 'full_year' %}selected{% endif %}>Full Year</option>
+                    </select>
+                </div>
+                
+                <!-- Property Type -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Property Type</label>
+                    <select name="listing_type" class="form-select">
+                        <option value="">Any Type</option>
+                        <option value="full" {% if listing_type == 'full' %}selected{% endif %}>Full Apartment/House</option>
+                        <option value="room" {% if listing_type == 'room' %}selected{% endif %}>Single Room</option>
+                    </select>
+                </div>
+                
+                <!-- Bedrooms -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Bedrooms</label>
+                    <select name="beds" class="form-select">
+                        <option value="">Any</option>
+                        <option value="0" {% if beds == '0' %}selected{% endif %}>Studio</option>
+                        <option value="1" {% if beds == '1' %}selected{% endif %}>1 Bed</option>
+                        <option value="2" {% if beds == '2' %}selected{% endif %}>2 Beds</option>
+                        <option value="3" {% if beds == '3' %}selected{% endif %}>3+ Beds</option>
+                    </select>
+                </div>
+                
+                <!-- Max Price -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Max Price</label>
+                    <select name="max_price" class="form-select">
+                        <option value="">Any Price</option>
+                        <option value="500" {% if max_price == '500' %}selected{% endif %}>Under $500</option>
+                        <option value="1000" {% if max_price == '1000' %}selected{% endif %}>Under $1,000</option>
+                        <option value="1500" {% if max_price == '1500' %}selected{% endif %}>Under $1,500</option>
+                        <option value="2000" {% if max_price == '2000' %}selected{% endif %}>Under $2,000</option>
+                        <option value="3000" {% if max_price == '3000' %}selected{% endif %}>Under $3,000</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                <a href="{% url 'search_results' %}" class="btn btn-outline-secondary w-100 mt-2">Clear All</a>
+            </form>
+        </div>
+        
+        <!-- Results -->
+        <div class="col-md-9 p-4">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3>{{ total_results }} Sublet{{ total_results|pluralize }} Found</h3>
+                    {% if location %}
+                        <p class="text-muted mb-0">in {{ location }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <!-- Map Toggle -->
+                    <button class="btn btn-outline-primary" onclick="toggleMapView()">
+                        <i class="bi bi-map"></i> <span id="mapToggleText">Show Map</span>
+                    </button>
+                    
+                    <!-- Sort -->
+                    <form method="get" class="d-inline">
+                        {% for key, value in request.GET.items %}
+                            {% if key != 'sort' and key != 'page' %}
+                                <input type="hidden" name="{{ key }}" value="{{ value }}">
+                            {% endif %}
+                        {% endfor %}
+                        <select name="sort" class="form-select" onchange="this.form.submit()">
+                            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                            <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Map Container (Hidden by default) -->
+            <div id="mapContainer" class="mb-4" style="display: none;">
+                <div id="searchMap" style="height: 500px; border-radius: 12px; border: 2px solid #e0e0e0;"></div>
+            </div>
+            
+            <!-- Listings Grid -->
+            {% if page_obj %}
+                <div class="row">
+                    {% for listing in page_obj %}
+                        <div class="col-md-4 mb-4">
+                            <a href="{% url 'listing_detail' listing.pk %}" class="card listing-card text-decoration-none h-100">
+                                {% if listing.images.first %}
+                                    <img src="{{ listing.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ listing.title }}">
+                                {% else %}
+                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="bi bi-house-door display-3"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title text-dark mb-0">${{ listing.rent }}/mo</h5>
+                                        {% if listing.is_boosted %}
+                                            <span class="badge bg-warning text-dark">Featured</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="text-muted small mb-2">
+                                        {{ listing.beds }} bd · {{ listing.baths }} ba · 
+                                        {% if listing.listing_type == 'room' %}Room{% else %}Full Place{% endif %}
+                                    </p>
+                                    
+                                    <p class="card-text text-dark mb-2">{{ listing.title|truncatewords:8 }}</p>
+                                    
+                                    <p class="text-muted small mb-2">
+                                        <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
+                                    </p>
+                                    
+                                    <span class="badge bg-light text-dark">
+                                        {{ listing.get_duration_type_display }}
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+                            
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info text-center">
+                    <h4>No listings found</h4>
+                    <p>Try adjusting your filters or <a href="{% url 'create_listing' %}">post your own listing</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let map = null;
+let markers = [];
+let mapVisible = false;
+
+function toggleMapView() {
+    mapVisible = !mapVisible;
+    const mapContainer = document.getElementById('mapContainer');
+    const toggleText = document.getElementById('mapToggleText');
+    
+    if (mapVisible) {
+        mapContainer.style.display = 'block';
+        toggleText.textContent = 'Hide Map';
+        initMap();
+    } else {
+        mapContainer.style.display = 'none';
+        toggleText.textContent = 'Show Map';
+    }
+}
+
+function initMap() {
+    if (map) {
+        map.invalidateSize(); // Refresh if already exists
+        return;
+    }
+    
+    map = L.map('searchMap').setView([40.7128, -74.0060], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // Add markers for all listings with coordinates
+    const listings = [
+        {% for listing in page_obj %}
+            {% if listing.latitude and listing.longitude %}
+            {
+                lat: {{ listing.latitude }},
+                lng: {{ listing.longitude }},
+                title: "{{ listing.title|escapejs }}",
+                price: "{{ listing.rent }}",
+                beds: "{{ listing.beds }}",
+                baths: "{{ listing.baths }}",
+                url: "{% url 'listing_detail' listing.pk %}"
+            },
+            {% endif %}
+        {% endfor %}
+    ];
+    
+    if (listings.length > 0) {
+        listings.forEach(listing => {
+            const marker = L.marker([listing.lat, listing.lng]).addTo(map);
+            marker.bindPopup(`
+                <div style="min-width: 180px;">
+                    <strong style="font-size: 14px;">${listing.title}</strong><br>
+                    <span style="color: #0066cc; font-weight: bold;">$${listing.price}/mo</span><br>
+                    <span style="color: #666; font-size: 12px;">${listing.beds} bd · ${listing.baths} ba</span><br>
+                    <a href="${listing.url}" style="color: #0066cc; text-decoration: none; font-size: 13px;">View Details →</a>
+                </div>
+            `);
+            markers.push(marker);
+        });
+        
+        // Fit bounds to show all markers
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.1));
+    } else {
+        // Default to NYC if no listings with coordinates
+        map.setView([40.7128, -74.0060], 12);
+    }
+}
+</script>
+{% endblock %}

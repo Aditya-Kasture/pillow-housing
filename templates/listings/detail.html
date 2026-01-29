@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ listing.title }} - Pillow Housing{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Title and Location -->
+    <div class="mb-3">
+        <h2>{{ listing.title }}</h2>
+        <div class="d-flex align-items-center text-muted">
+            <i class="bi bi-geo-alt me-1"></i>
+            <span>{{ listing.address }}, {{ listing.city }}, {{ listing.state }} {{ listing.zip_code }}</span>
+            <span class="mx-2">·</span>
+            <span class="badge bg-primary">{{ listing.get_listing_type_display }}</span>
+            <span class="mx-2">·</span>
+            <span class="badge bg-info text-dark">{{ listing.get_duration_type_display }}</span>
+        </div>
+    </div>
+    
+    <!-- Images Gallery -->
+    <div class="row mb-4">
+        {% if listing.images.all %}
+            <div class="col-12">
+                <div id="listingCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner rounded">
+                        {% for image in listing.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ listing.title }}" style="height: 500px; object-fit: cover;">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if listing.images.count > 1 %}
+                        <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="bg-secondary text-white rounded d-flex align-items-center justify-content-center" style="height: 500px;">
+                    <i class="bi bi-house-door display-1"></i>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Hosted by / Price -->
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                <div>
+                    <h5 class="mb-1">{{ listing.get_listing_type_display }} hosted by {{ listing.owner.username }}</h5>
+                    <p class="text-muted mb-0">{{ listing.beds }} bed{{ listing.beds|pluralize }} · {{ listing.baths }} bath{{ listing.baths|pluralize }}</p>
+                </div>
+                <div class="text-end">
+                    <h3 class="text-primary mb-0">${{ listing.rent }}<small class="text-muted">/month</small></h3>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="border-bottom pb-3 mb-3">
+                <h5 class="mb-3">About this place</h5>
+                <p style="white-space: pre-line;">{{ listing.description }}</p>
+            </div>
+            
+            <!-- Lease Details -->
+            <div class="border-bottom pb-3 mb-3">
+                <h5 class="mb-3">Lease Details</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="bi bi-calendar-event text-primary"></i> <strong>Duration:</strong> {{ listing.get_duration_type_display }}</p>
+                        <p><i class="bi bi-calendar-check text-success"></i> <strong>Start:</strong> {{ listing.lease_start|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><i class="bi bi-calendar-x text-danger"></i> <strong>End:</strong> {{ listing.lease_end|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Apartment Amenities -->
+            <div class="border-bottom pb-3 mb-3">
+                <h5 class="mb-3">Apartment Features</h5>
+                <div class="row">
+                    {% if listing.furnished %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Furnished
+                        </div>
+                    {% endif %}
+                    {% if listing.washer_dryer_in_unit %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Washer/Dryer in Unit
+                        </div>
+                    {% endif %}
+                    {% if listing.dishwasher %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Dishwasher
+                        </div>
+                    {% endif %}
+                    {% if listing.air_conditioning %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Air Conditioning
+                        </div>
+                    {% endif %}
+                    {% if listing.heating %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Heating
+                        </div>
+                    {% endif %}
+                    {% if listing.balcony %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Balcony/Patio
+                        </div>
+                    {% endif %}
+                    {% if listing.pets_allowed %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Pets Allowed
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Building Amenities -->
+            <div class="border-bottom pb-3 mb-3">
+                <h5 class="mb-3">Building Amenities</h5>
+                <div class="row">
+                    {% if listing.gym %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Gym
+                        </div>
+                    {% endif %}
+                    {% if listing.pool %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Pool
+                        </div>
+                    {% endif %}
+                    {% if listing.parking %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Parking
+                            {% if listing.parking_spaces %} ({{ listing.parking_spaces }} space{{ listing.parking_spaces|pluralize }}){% endif %}
+                        </div>
+                    {% endif %}
+                    {% if listing.doorman %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Doorman
+                        </div>
+                    {% endif %}
+                    {% if listing.elevator %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Elevator
+                        </div>
+                    {% endif %}
+                    {% if listing.laundry_in_building %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Laundry in Building
+                        </div>
+                    {% endif %}
+                    {% if listing.bike_storage %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>Bike Storage
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Utilities -->
+            <div class="border-bottom pb-3 mb-3">
+                <h5 class="mb-3">Utilities Included</h5>
+                <div class="row">
+                    {% if listing.electricity_included %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-lightning-charge-fill text-warning me-2"></i>Electricity
+                        </div>
+                    {% endif %}
+                    {% if listing.water_included %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-droplet-fill text-primary me-2"></i>Water
+                        </div>
+                    {% endif %}
+                    {% if listing.gas_included %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-fire text-danger me-2"></i>Gas
+                        </div>
+                    {% endif %}
+                    {% if listing.internet_included %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-wifi text-info me-2"></i>Internet
+                        </div>
+                    {% endif %}
+                    {% if listing.cable_included %}
+                        <div class="col-md-6 mb-2">
+                            <i class="bi bi-tv-fill text-secondary me-2"></i>Cable/TV
+                        </div>
+                    {% endif %}
+                    {% if not listing.electricity_included and not listing.water_included and not listing.gas_included and not listing.internet_included and not listing.cable_included %}
+                        <div class="col-12">
+                            <p class="text-muted">Utilities not included - tenant responsible</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Roommate Info -->
+            {% if listing.has_roommates %}
+            <div class="border-bottom pb-3 mb-3">
+                <h5 class="mb-3">Roommate Information</h5>
+                <p><i class="bi bi-people-fill text-primary me-2"></i>
+                    <strong>{{ listing.number_of_roommates }} roommate{{ listing.number_of_roommates|pluralize }}</strong>
+                    {% if listing.roommate_gender != 'any' %} ({{ listing.get_roommate_gender_display }}){% endif %}
+                </p>
+            </div>
+            {% endif %}
+            
+            <!-- Map -->
+            {% if listing.latitude and listing.longitude %}
+            <div class="mb-3">
+                <h5 class="mb-3">Location</h5>
+                <div id="map" style="height: 400px; border-radius: 12px;"></div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar - Contact Card -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h4 class="mb-0">${{ listing.rent }}</h4>
+                            <small class="text-muted">per month</small>
+                        </div>
+                        {% if user.is_authenticated and user != listing.owner %}
+                            <a href="{% url 'toggle_save' listing.pk %}" class="btn btn-outline-danger">
+                                <i class="bi bi-heart{% if is_saved %}-fill{% endif %}"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <small class="text-muted d-block">Lease Period</small>
+                        <strong>{{ listing.lease_start|date:"M d" }} - {{ listing.lease_end|date:"M d, Y" }}</strong>
+                    </div>
+                    
+                    {% if user.is_authenticated and user != listing.owner %}
+                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#contactModal">
+                            <i class="bi bi-envelope"></i> Contact Host
+                        </button>
+                    {% elif user == listing.owner %}
+                        <a href="{% url 'edit_listing' listing.pk %}" class="btn btn-warning w-100 mb-2">
+                            <i class="bi bi-pencil"></i> Edit Listing
+                        </a>
+                        <a href="{% url 'bump_listing' listing.pk %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-arrow-up-circle"></i> Bump to Top
+                        </a>
+                        {% if not listing.is_boosted %}
+                            <a href="{% url 'boost_listing' listing.pk %}" class="btn btn-outline-success w-100">
+                                <i class="bi bi-rocket"></i> Boost Listing
+                            </a>
+                        {% else %}
+                            <div class="alert alert-success mb-0">
+                                <small><i class="bi bi-star-fill"></i> Boosted until {{ listing.boosted_until|date:"M d, Y" }}</small>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary w-100">Login to Contact</a>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">Posted {{ listing.created_at|timesince }} ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Contact {{ listing.owner.username }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Your Email</label>
+                        <input type="email" name="sender_email" class="form-control" value="{{ user.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone (Optional)</label>
+                        <input type="tel" name="sender_phone" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea name="message" class="form-control" rows="5" required placeholder="Hi! I'm interested in your listing..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if listing.latitude and listing.longitude %}
+<script>
+    const map = L.map('map').setView([{{ listing.latitude }}, {{ listing.longitude }}], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.marker([{{ listing.latitude }}, {{ listing.longitude }}])
+        .addTo(map)
+        .bindPopup('<strong>{{ listing.title }}</strong><br>{{ listing.address }}');
+</script>
+{% endif %}
+{% endblock %}

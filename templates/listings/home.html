@@ -1,0 +1,46 @@
+{% for listing in page_obj %}
+    <div class="card mb-3 listing-card">
+        <div class="row g-0">
+            <div class="col-md-4">
+                {% if listing.images.first %}
+                    <img src="{{ listing.images.first.image.url }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ listing.title }}">
+                {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center h-100 rounded-start" style="min-height: 200px;">
+                        <i class="bi bi-house-door display-1"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <div>
+                            {% if listing.is_boosted %}
+                                <span class="badge bg-warning text-dark">Featured</span>
+                            {% endif %}
+                            <span class="badge bg-info">{{ listing.get_duration_type_display }}</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted mb-2">
+                        <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
+                        <span class="mx-2">·</span>
+                        <span class="badge bg-light text-dark">{{ listing.get_listing_type_display }}</span>
+                    </p>
+                    <p class="card-text">
+                        <span class="fs-4 fw-bold text-primary">${{ listing.rent }}</span>/month
+                        <span class="text-muted">· {{ listing.beds }} bd {{ listing.baths }} ba</span>
+                    </p>
+                    
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        {% if listing.furnished %}<span class="badge bg-light text-dark"><i class="bi bi-house"></i> Furnished</span>{% endif %}
+                        {% if listing.pets_allowed %}<span class="badge bg-light text-dark"><i class="bi bi-heart"></i> Pets OK</span>{% endif %}
+                        {% if listing.washer_dryer_in_unit %}<span class="badge bg-light text-dark"><i class="bi bi-water"></i> W/D</span>{% endif %}
+                        {% if listing.parking %}<span class="badge bg-light text-dark"><i class="bi bi-p-circle"></i> Parking</span>{% endif %}
+                    </div>
+                    
+                    <a href="{% url 'listing_detail' listing.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

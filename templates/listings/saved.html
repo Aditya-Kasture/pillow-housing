@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Saved Listings - Pillow Housing{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-heart-fill text-danger"></i> Saved Listings</h2>
+    
+    {% if saved_listings %}
+        <div class="row">
+            {% for saved in saved_listings %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 listing-card">
+                        <a href="{% url 'listing_detail' saved.listing.pk %}" class="text-decoration-none">
+                            {% if saved.listing.images.first %}
+                                <img src="{{ saved.listing.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ saved.listing.title }}">
+                            {% else %}
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="bi bi-house-door display-3"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-dark mb-0">${{ saved.listing.rent }}/mo</h5>
+                                    {% if saved.listing.is_boosted %}
+                                        <span class="badge bg-warning text-dark">Featured</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <p class="text-muted small mb-2">
+                                    {{ saved.listing.beds }} bd · {{ saved.listing.baths }} ba · 
+                                    {% if saved.listing.listing_type == 'room' %}Room{% else %}Full Place{% endif %}
+                                </p>
+                                
+                                <p class="card-text text-dark mb-2">{{ saved.listing.title|truncatewords:8 }}</p>
+                                
+                                <p class="text-muted small mb-2">
+                                    <i class="bi bi-geo-alt"></i> {{ saved.listing.city }}, {{ saved.listing.state }}
+                                </p>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-light text-dark">
+                                        {{ saved.listing.get_duration_type_display }}
+                                    </span>
+                                    <small class="text-muted">Saved {{ saved.created_at|timesince }} ago</small>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <div class="card-footer bg-transparent border-0">
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'listing_detail' saved.listing.pk %}" class="btn btn-sm btn-primary flex-grow-1">
+                                    View Details
+                                </a>
+                                <a href="{% url 'toggle_save' saved.listing.pk %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-heart-fill"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-heart display-1 text-muted"></i>
+            <h4 class="mt-3">No saved listings yet</h4>
+            <p class="text-muted">Start browsing and save your favorite sublets!</p>
+            <a href="{% url 'search_results' %}" class="btn btn-primary">Browse Listings</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.listing-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+.listing-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

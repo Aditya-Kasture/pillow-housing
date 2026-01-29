@@ -1,0 +1,12 @@
+Django>=5.0,<5.1
+python-dotenv>=1.0
+Pillow>=10.0
+django-cloudinary-storage>=0.3
+cloudinary>=1.40
+stripe>=7.0
+geopy>=2.4
+celery>=5.3
+redis>=5.0
+django-celery-beat>=2.5
+whitenoise>=6.6
+gunicorn>=21.0

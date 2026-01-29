@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block title %}Find Your Perfect Student Sublet - Pillow Housing{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Search -->
+<div class="bg-primary text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 fw-bold mb-3">Student Sublets Made Easy</h1>
+                <p class="lead mb-4">Find student housing for any semester</p>
+                
+                <!-- Main Search Form -->
+                <div class="card shadow-lg">
+                    <div class="card-body p-4">
+                        <form method="get" action="{% url 'search_results' %}">
+                            
+                            <!-- Location Search -->
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <input type="text" name="location" class="form-control form-control-lg" 
+                                           placeholder="Enter city, school, or zip code" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="bi bi-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Filters -->
+                            <div class="row g-2 mt-3">
+                                <div class="col-md-4">
+                                    <select name="duration" class="form-select">
+                                        <option value="">Any Duration</option>
+                                        <option value="fall">Fall Semester</option>
+                                        <option value="spring">Spring Semester</option>
+                                        <option value="summer">Summer</option>
+                                        <option value="winter_break">Winter Break</option>
+                                        <option value="spring_break">Spring Break</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select name="beds" class="form-select">
+                                        <option value="">Any Beds</option>
+                                        <option value="0">Studio</option>
+                                        <option value="1">1 Bed</option>
+                                        <option value="2">2 Beds</option>
+                                        <option value="3">3+ Beds</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select name="max_price" class="form-select">
+                                        <option value="">Any Price</option>
+                                        <option value="500">Under $500</option>
+                                        <option value="1000">Under $1,000</option>
+                                        <option value="1500">Under $1,500</option>
+                                        <option value="2000">Under $2,000</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Searches -->
+<div class="container my-5">
+    <h3 class="mb-4">Popular Student Sublets</h3>
+    
+    <div class="mb-4">
+        <h5 class="text-muted mb-3">Fall Semester Sublets</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Ann%20Arbor&duration=fall" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Ann Arbor, MI</h6>
+                        <p class="text-muted small mb-0">University of Michigan</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=State%20College&duration=fall" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">State College, PA</h6>
+                        <p class="text-muted small mb-0">Penn State University</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=East%20Lansing&duration=fall" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">East Lansing, MI</h6>
+                        <p class="text-muted small mb-0">Michigan State</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Madison&duration=fall" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Madison, WI</h6>
+                        <p class="text-muted small mb-0">UW-Madison</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-4">
+        <h5 class="text-muted mb-3">Spring Semester Sublets</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Ann%20Arbor&duration=spring" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Ann Arbor, MI</h6>
+                        <p class="text-muted small mb-0">University of Michigan</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Detroit&duration=spring" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Detroit, MI</h6>
+                        <p class="text-muted small mb-0">Wayne State</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Boston&duration=spring" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Boston, MA</h6>
+                        <p class="text-muted small mb-0">BU, BC, NEU</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Austin&duration=spring" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Austin, TX</h6>
+                        <p class="text-muted small mb-0">UT Austin</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-4">
+        <h5 class="text-muted mb-3">Summer Sublets</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Ann%20Arbor&duration=summer" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Ann Arbor, MI</h6>
+                        <p class="text-muted small mb-0">University of Michigan</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=New%20York&duration=summer" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">New York, NY</h6>
+                        <p class="text-muted small mb-0">NYU, Columbia</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Los%20Angeles&duration=summer" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Los Angeles, CA</h6>
+                        <p class="text-muted small mb-0">UCLA, USC</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'search_results' %}?location=Chicago&duration=summer" class="card text-decoration-none hover-shadow">
+                    <div class="card-body">
+                        <h6 class="card-title">Chicago, IL</h6>
+                        <p class="text-muted small mb-0">UChicago, Northwestern</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="bg-light py-5">
+    <div class="container">
+        <h3 class="text-center mb-5">How Pillow Housing Works</h3>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="mb-3">
+                    <i class="bi bi-search display-4 text-primary"></i>
+                </div>
+                <h5>Search</h5>
+                <p class="text-muted">Find sublets by location, semester, and your budget</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="mb-3">
+                    <i class="bi bi-chat-dots display-4 text-primary"></i>
+                </div>
+                <h5>Connect</h5>
+                <p class="text-muted">Message verified students directly</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="mb-3">
+                    <i class="bi bi-house-check display-4 text-primary"></i>
+                </div>
+                <h5>Move In</h5>
+                <p class="text-muted">Secure your sublet and focus on your studies</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}

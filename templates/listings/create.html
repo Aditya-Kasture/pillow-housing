@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+
+{% block title %}Post a Listing - Pillow Housing{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="mb-4">Post a Student Sublet</h2>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Posting Type -->
+                        <h5 class="border-bottom pb-2 mb-3">What are you doing?</h5>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                {{ form.posting_type }}
+                                {% if form.posting_type.errors %}<div class="text-danger small">{{ form.posting_type.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Property Type*</label>
+                                {{ form.listing_type }}
+                                {% if form.listing_type.errors %}<div class="text-danger small">{{ form.listing_type.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Basic Information -->
+                        <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Listing Title*</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Description*</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Monthly Rent ($)*</label>
+                                {{ form.rent }}
+                                {% if form.rent.errors %}<div class="text-danger small">{{ form.rent.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Bedrooms*</label>
+                                {{ form.beds }}
+                                {% if form.beds.errors %}<div class="text-danger small">{{ form.beds.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Bathrooms*</label>
+                                {{ form.baths }}
+                                {% if form.baths.errors %}<div class="text-danger small">{{ form.baths.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Location -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Location</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Street Address*</label>
+                            {{ form.address }}
+                            {% if form.address.errors %}<div class="text-danger small">{{ form.address.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label">City*</label>
+                                {{ form.city }}
+                                {% if form.city.errors %}<div class="text-danger small">{{ form.city.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">State*</label>
+                                {{ form.state }}
+                                {% if form.state.errors %}<div class="text-danger small">{{ form.state.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Zip Code*</label>
+                                {{ form.zip_code }}
+                                {% if form.zip_code.errors %}<div class="text-danger small">{{ form.zip_code.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Lease Details -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Lease Details</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Duration Type*</label>
+                                {{ form.duration_type }}
+                                {% if form.duration_type.errors %}<div class="text-danger small">{{ form.duration_type.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Lease Start*</label>
+                                {{ form.lease_start }}
+                                {% if form.lease_start.errors %}<div class="text-danger small">{{ form.lease_start.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Lease End*</label>
+                                {{ form.lease_end }}
+                                {% if form.lease_end.errors %}<div class="text-danger small">{{ form.lease_end.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Apartment Amenities -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Apartment Amenities</h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.furnished }}
+                                    <label class="form-check-label">Furnished</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.washer_dryer_in_unit }}
+                                    <label class="form-check-label">Washer/Dryer</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.dishwasher }}
+                                    <label class="form-check-label">Dishwasher</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.air_conditioning }}
+                                    <label class="form-check-label">A/C</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.heating }}
+                                    <label class="form-check-label">Heating</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.balcony }}
+                                    <label class="form-check-label">Balcony</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.pets_allowed }}
+                                    <label class="form-check-label">Pets Allowed</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Building Amenities -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Building Amenities</h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.gym }}
+                                    <label class="form-check-label">Gym</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.pool }}
+                                    <label class="form-check-label">Pool</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.parking }}
+                                    <label class="form-check-label">Parking</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label small">Parking Spaces</label>
+                                {{ form.parking_spaces }}
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.doorman }}
+                                    <label class="form-check-label">Doorman</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.elevator }}
+                                    <label class="form-check-label">Elevator</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.laundry_in_building }}
+                                    <label class="form-check-label">Laundry</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.bike_storage }}
+                                    <label class="form-check-label">Bike Storage</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Utilities -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Utilities Included</h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.electricity_included }}
+                                    <label class="form-check-label">Electricity</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.water_included }}
+                                    <label class="form-check-label">Water</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.gas_included }}
+                                    <label class="form-check-label">Gas</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.internet_included }}
+                                    <label class="form-check-label">Internet</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="form-check">
+                                    {{ form.cable_included }}
+                                    <label class="form-check-label">Cable/TV</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Roommate Info -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Roommate Information (if applicable)</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="form-check">
+                                    {{ form.has_roommates }}
+                                    <label class="form-check-label">Has Roommates</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Number of Roommates</label>
+                                {{ form.number_of_roommates }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Roommate Gender</label>
+                                {{ form.roommate_gender }}
+                            </div>
+                        </div>
+                        
+                        <!-- Photos -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">Photos</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Images</label>
+                            <input type="file" name="images" id="images" class="form-control" accept="image/*" multiple>
+                            <small class="form-text text-muted">Select multiple images. First image will be the cover photo.</small>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Post Listing</button>
+                            <a href="{% url 'landing' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
