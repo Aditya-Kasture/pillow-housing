@@ -3,12 +3,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 
-# Vercel-specific settings
-if os.environ.get('VERCEL'):
-    ALLOWED_HOSTS = ['*']
-    DEBUG = False
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +11,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-CHANGE-IN-PRODUCTION')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+# Allowed Hosts - FIXED
 ALLOWED_HOSTS = [
+    '*',
     'pillowhousing.com',
     'www.pillowhousing.com',
     'pillowhousing.onrender.com',
@@ -46,7 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files for production
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,7 +72,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
-# Uses PostgreSQL on Render (via DATABASE_URL), SQLite locally
 DATABASES = {
     'default': dj_database_url.config(
         default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
@@ -99,12 +94,10 @@ TIME_ZONE = 'America/New_York'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# Use WhiteNoise for static file compression and caching
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
@@ -118,7 +111,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', '')
 }
 
-# Use Cloudinary for media storage if configured
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -147,14 +139,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Pillow Housing <noreply@pillowhousing.com>')
 
-# Production Security Settings
-if not DEBUG:
+# Production Security Settings (only if NOT on Vercel)
+if not DEBUG and not os.getenv('VERCEL'):
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
