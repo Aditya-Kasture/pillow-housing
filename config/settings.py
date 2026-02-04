@@ -13,12 +13,12 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allowed Hosts - FIXED
 ALLOWED_HOSTS = [
-    '*',
+    '.vercel.app',
+    'localhost',
+    '127.0.0.1',
     'pillowhousing.com',
     'www.pillowhousing.com',
     'pillowhousing.onrender.com',
-    'localhost',
-    '127.0.0.1',
 ]
 
 # Application definition
