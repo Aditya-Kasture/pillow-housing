@@ -1,231 +1,317 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Find Your Perfect Student Sublet - Pillow Housing{% endblock %}
 
 {% block content %}
-<!-- Hero Section with Search -->
-<div class="bg-primary text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+<style>
+    .hero-section {
+        background-color: var(--background);
+        padding: 6rem 0 5rem;
+        min-height: 65vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .hero-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.125rem;
+        color: var(--text-muted);
+        margin-bottom: 3rem;
+    }
+    
+    .trusted-badge {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+    
+    .search-bar-container {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        max-width: 1000px;
+        margin: 0 auto;
+        border: 2px solid var(--neutral-gray);
+    }
+    
+    .search-input-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .search-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .search-input {
+        border: 2px solid var(--neutral-gray);
+        border-radius: 10px;
+        padding: 0.875rem 1rem;
+        width: 100%;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 3px rgba(90, 44, 138, 0.1);
+    }
+    
+    .search-btn {
+        background-color: var(--primary-purple);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+    }
+    
+    .search-btn:hover {
+        background-color: var(--primary-purple-light);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(90, 44, 138, 0.3);
+    }
+    
+    .destinations-section {
+        padding: 5rem 0;
+        background-color: white;
+    }
+    
+    .section-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2.5rem;
+    }
+    
+    .destination-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .destination-card {
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        height: 300px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    
+    .destination-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .destination-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    
+    .destination-card:hover .destination-image {
+        transform: scale(1.05);
+    }
+    
+    .destination-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .destination-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+    }
+    
+    .destination-state {
+        color: rgba(255,255,255,0.9);
+        margin: 0;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h1 class="display-4 fw-bold mb-3">Student Sublets Made Easy</h1>
-                <p class="lead mb-4">Find student housing for any semester</p>
-                
-                <!-- Main Search Form -->
-                <div class="card shadow-lg">
-                    <div class="card-body p-4">
-                        <form method="get" action="{% url 'search_results' %}">
-                            
-                            <!-- Location Search -->
-                            <div class="row g-3">
-                                <div class="col-md-8">
-                                    <input type="text" name="location" class="form-control form-control-lg" 
-                                           placeholder="Enter city, school, or zip code" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                                        <i class="bi bi-search"></i> Search
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Quick Filters -->
-                            <div class="row g-2 mt-3">
-                                <div class="col-md-4">
-                                    <select name="duration" class="form-select">
-                                        <option value="">Any Duration</option>
-                                        <option value="fall">Fall Semester</option>
-                                        <option value="spring">Spring Semester</option>
-                                        <option value="summer">Summer</option>
-                                        <option value="winter_break">Winter Break</option>
-                                        <option value="spring_break">Spring Break</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select name="beds" class="form-select">
-                                        <option value="">Any Beds</option>
-                                        <option value="0">Studio</option>
-                                        <option value="1">1 Bed</option>
-                                        <option value="2">2 Beds</option>
-                                        <option value="3">3+ Beds</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select name="max_price" class="form-select">
-                                        <option value="">Any Price</option>
-                                        <option value="500">Under $500</option>
-                                        <option value="1000">Under $1,000</option>
-                                        <option value="1500">Under $1,500</option>
-                                        <option value="2000">Under $2,000</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </form>
+        <div class="text-center">
+            <p class="trusted-badge">Trusted by 10,000+ Students</p>
+            <h1 class="hero-title">Find your perfect student sublet</h1>
+            <p class="hero-subtitle">Discover short-term housing from verified students near your campus.</p>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-bar-container">
+            <form method="get" action="{% url 'search_results' %}">
+                <div class="search-input-group">
+                    <div>
+                        <label class="search-label">Where</label>
+                        <input type="text" name="location" class="search-input" placeholder="City or School" required>
+                    </div>
+                    
+                    <div>
+                        <label class="search-label">Start Date</label>
+                        <input type="date" name="start_date" class="search-input">
+                    </div>
+                    
+                    <div>
+                        <label class="search-label">End Date</label>
+                        <input type="date" name="end_date" class="search-input">
+                    </div>
+                    
+                    <div>
+                        <label class="search-label">Max Price</label>
+                        <select name="max_price" class="search-input">
+                            <option value="">Any price</option>
+                            <option value="500">Under $500</option>
+                            <option value="1000">Under $1,000</option>
+                            <option value="1500">Under $1,500</option>
+                            <option value="2000">Under $2,000</option>
+                            <option value="2500">Over $2,000</option>
+                        </select>
                     </div>
                 </div>
-            </div>
+                
+                <button type="submit" class="search-btn">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </form>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Popular Searches -->
-<div class="container my-5">
-    <h3 class="mb-4">Popular Student Sublets</h3>
-    
-    <div class="mb-4">
-        <h5 class="text-muted mb-3">Fall Semester Sublets</h5>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Ann%20Arbor&duration=fall" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Ann Arbor, MI</h6>
-                        <p class="text-muted small mb-0">University of Michigan</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=State%20College&duration=fall" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">State College, PA</h6>
-                        <p class="text-muted small mb-0">Penn State University</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=East%20Lansing&duration=fall" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">East Lansing, MI</h6>
-                        <p class="text-muted small mb-0">Michigan State</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Madison&duration=fall" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Madison, WI</h6>
-                        <p class="text-muted small mb-0">UW-Madison</p>
-                    </div>
-                </a>
-            </div>
+<!-- Popular Destinations -->
+<section class="destinations-section">
+    <div class="container">
+        <h2 class="section-title">Explore popular destinations</h2>
+        
+        <div class="destination-grid">
+            <!-- Boston -->
+            <a href="{% url 'search_results' %}?location=Boston" class="destination-card">
+                <img src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?w=800&h=600&fit=crop" alt="Boston" class="destination-image">
+                <div class="destination-overlay">
+                    <h3 class="destination-name">Boston</h3>
+                    <p class="destination-state">MA</p>
+                </div>
+            </a>
+            
+            <!-- New York -->
+            <a href="{% url 'search_results' %}?location=New+York" class="destination-card">
+                <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&h=600&fit=crop" alt="New York" class="destination-image">
+                <div class="destination-overlay">
+                    <h3 class="destination-name">New York</h3>
+                    <p class="destination-state">NY</p>
+                </div>
+            </a>
+            
+            <!-- San Francisco -->
+            <a href="{% url 'search_results' %}?location=San+Francisco" class="destination-card">
+                <img src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop" alt="San Francisco" class="destination-image">
+                <div class="destination-overlay">
+                    <h3 class="destination-name">San Francisco</h3>
+                    <p class="destination-state">CA</p>
+                </div>
+            </a>
+            
+            <!-- Los Angeles -->
+            <a href="{% url 'search_results' %}?location=Los+Angeles" class="destination-card">
+                <img src="https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=800&h=600&fit=crop" alt="Los Angeles" class="destination-image">
+                <div class="destination-overlay">
+                    <h3 class="destination-name">Los Angeles</h3>
+                    <p class="destination-state">CA</p>
+                </div>
+            </a>
+            
+            <!-- Chicago -->
+            <a href="{% url 'search_results' %}?location=Chicago" class="destination-card">
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=600&fit=crop" alt="Chicago" class="destination-image">
+                <div class="destination-overlay">
+                    <h3 class="destination-name">Chicago</h3>
+                    <p class="destination-state">IL</p>
+                </div>
+            </a>
+            
+            <!-- Austin -->
+            <a href="{% url 'search_results' %}?location=Austin" class="destination-card">
+                <img src="https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=800&h=600&fit=crop" alt="Austin" class="destination-image">
+                <div class="destination-overlay">
+                    <h3 class="destination-name">Austin</h3>
+                    <p class="destination-state">TX</p>
+                </div>
+            </a>
         </div>
     </div>
-    
-    <div class="mb-4">
-        <h5 class="text-muted mb-3">Spring Semester Sublets</h5>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Ann%20Arbor&duration=spring" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Ann Arbor, MI</h6>
-                        <p class="text-muted small mb-0">University of Michigan</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Detroit&duration=spring" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Detroit, MI</h6>
-                        <p class="text-muted small mb-0">Wayne State</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Boston&duration=spring" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Boston, MA</h6>
-                        <p class="text-muted small mb-0">BU, BC, NEU</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Austin&duration=spring" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Austin, TX</h6>
-                        <p class="text-muted small mb-0">UT Austin</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="mb-4">
-        <h5 class="text-muted mb-3">Summer Sublets</h5>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Ann%20Arbor&duration=summer" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Ann Arbor, MI</h6>
-                        <p class="text-muted small mb-0">University of Michigan</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=New%20York&duration=summer" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">New York, NY</h6>
-                        <p class="text-muted small mb-0">NYU, Columbia</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Los%20Angeles&duration=summer" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Los Angeles, CA</h6>
-                        <p class="text-muted small mb-0">UCLA, USC</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'search_results' %}?location=Chicago&duration=summer" class="card text-decoration-none hover-shadow">
-                    <div class="card-body">
-                        <h6 class="card-title">Chicago, IL</h6>
-                        <p class="text-muted small mb-0">UChicago, Northwestern</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 
 <!-- How It Works -->
-<div class="bg-light py-5">
+<section style="padding: 5rem 0; background-color: var(--background);">
     <div class="container">
-        <h3 class="text-center mb-5">How Pillow Housing Works</h3>
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
-                <div class="mb-3">
-                    <i class="bi bi-search display-4 text-primary"></i>
+        <div class="text-center mb-5">
+            <h2 class="section-title">How it works</h2>
+            <p class="hero-subtitle">Get started in three simple steps</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: var(--primary-purple);">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h4 style="font-weight: 600;">Browse Listings</h4>
+                    <p style="color: var(--text-muted);">Search verified sublets near your campus</p>
                 </div>
-                <h5>Search</h5>
-                <p class="text-muted">Find sublets by location, semester, and your budget</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="mb-3">
-                    <i class="bi bi-chat-dots display-4 text-primary"></i>
+            
+            <div class="col-md-4 text-center">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: var(--primary-purple);">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h4 style="font-weight: 600;">Connect with Students</h4>
+                    <p style="color: var(--text-muted);">Message verified students directly</p>
                 </div>
-                <h5>Connect</h5>
-                <p class="text-muted">Message verified students directly</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="mb-3">
-                    <i class="bi bi-house-check display-4 text-primary"></i>
+            
+            <div class="col-md-4 text-center">
+                <div class="p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: var(--primary-purple);">
+                        <i class="bi bi-house-check"></i>
+                    </div>
+                    <h4 style="font-weight: 600;">Move In</h4>
+                    <p style="color: var(--text-muted);">Secure your sublet with confidence</p>
                 </div>
-                <h5>Move In</h5>
-                <p class="text-muted">Secure your sublet and focus on your studies</p>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+</section>
 
-{% block extra_css %}
-<style>
-.hover-shadow {
-    transition: all 0.3s ease;
-}
-.hover-shadow:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transform: translateY(-2px);
-}
-</style>
 {% endblock %}

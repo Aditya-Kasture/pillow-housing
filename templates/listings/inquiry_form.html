@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Inquire About {{ listing.title }} - Pillow Housing{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="mb-4">Send Inquiry to Support</h2>
+                    
+                    <div class="bg-light p-3 rounded mb-4">
+                        <h5>{{ listing.title }}</h5>
+                        <p class="text-muted mb-1">
+                            <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
+                        </p>
+                        <p class="mb-0"><strong>${{ listing.rent }}/mo</strong></p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Important:</strong> This inquiry will be sent to <strong>support@pillowhousing.com</strong> from your .edu email address. Our support team will respond within 24 hours.
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Your Name *</label>
+                            <input type="text" name="name" class="form-control" value="{{ user.first_name }} {{ user.last_name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Your .EDU Email *</label>
+                            <input type="email" name="email" class="form-control" value="{{ user.email }}" placeholder="yourname@university.edu" required>
+                            <small class="form-text text-muted">
+                                Must be a .edu email address
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" name="phone" class="form-control" placeholder="Optional">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Your Inquiry *</label>
+                            <textarea name="message" class="form-control" rows="8" placeholder="Tell us your questions or concerns about this listing..." required></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send"></i> Send Inquiry to Support
+                            </button>
+                            <a href="{% url 'listing_detail' listing.pk %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -16,6 +16,18 @@
                     <input type="text" name="location" class="form-control" value="{{ location }}" placeholder="City, School, or Zip">
                 </div>
                 
+                <!-- Start Date -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+                </div>
+                
+                <!-- End Date -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">End Date</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+                </div>
+                
                 <!-- Duration -->
                 <div class="mb-3">
                     <label class="form-label fw-bold">Duration</label>
@@ -62,7 +74,7 @@
                         <option value="1000" {% if max_price == '1000' %}selected{% endif %}>Under $1,000</option>
                         <option value="1500" {% if max_price == '1500' %}selected{% endif %}>Under $1,500</option>
                         <option value="2000" {% if max_price == '2000' %}selected{% endif %}>Under $2,000</option>
-                        <option value="3000" {% if max_price == '3000' %}selected{% endif %}>Under $3,000</option>
+                        <option value="2500" {% if max_price == '2500' %}selected{% endif %}>Over $2,000</option>
                     </select>
                 </div>
                 
@@ -142,9 +154,16 @@
                                         <i class="bi bi-geo-alt"></i> {{ listing.city }}, {{ listing.state }}
                                     </p>
                                     
-                                    <span class="badge bg-light text-dark">
-                                        {{ listing.get_duration_type_display }}
-                                    </span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-light text-dark">
+                                            {{ listing.get_duration_type_display }}
+                                        </span>
+                                        {% if listing.start_date and listing.end_date %}
+                                            <small class="text-muted">
+                                                {{ listing.start_date|date:"M d" }} - {{ listing.end_date|date:"M d, Y" }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </a>
                         </div>
@@ -239,9 +258,9 @@ function initMap() {
             marker.bindPopup(`
                 <div style="min-width: 180px;">
                     <strong style="font-size: 14px;">${listing.title}</strong><br>
-                    <span style="color: #0066cc; font-weight: bold;">$${listing.price}/mo</span><br>
+                    <span style="color: var(--primary-purple); font-weight: bold;">$${listing.price}/mo</span><br>
                     <span style="color: #666; font-size: 12px;">${listing.beds} bd · ${listing.baths} ba</span><br>
-                    <a href="${listing.url}" style="color: #0066cc; text-decoration: none; font-size: 13px;">View Details →</a>
+                    <a href="${listing.url}" style="color: var(--primary-purple); text-decoration: none; font-size: 13px;">View Details →</a>
                 </div>
             `);
             markers.push(marker);

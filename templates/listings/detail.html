@@ -245,28 +245,40 @@
                         <strong>{{ listing.lease_start|date:"M d" }} - {{ listing.lease_end|date:"M d, Y" }}</strong>
                     </div>
                     
-                    {% if user.is_authenticated and user != listing.owner %}
-                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#contactModal">
-                            <i class="bi bi-envelope"></i> Contact Host
-                        </button>
-                    {% elif user == listing.owner %}
-                        <a href="{% url 'edit_listing' listing.pk %}" class="btn btn-warning w-100 mb-2">
-                            <i class="bi bi-pencil"></i> Edit Listing
-                        </a>
-                        <a href="{% url 'bump_listing' listing.pk %}" class="btn btn-outline-primary w-100 mb-2">
-                            <i class="bi bi-arrow-up-circle"></i> Bump to Top
-                        </a>
-                        {% if not listing.is_boosted %}
-                            <a href="{% url 'boost_listing' listing.pk %}" class="btn btn-outline-success w-100">
-                                <i class="bi bi-rocket"></i> Boost Listing
+                    <!-- ACTION BUTTONS -->
+                    {% if user.is_authenticated %}
+                        {% if user != listing.owner %}
+                            <!-- Message Owner Button -->
+                            <a href="{% url 'send_message' listing.pk %}" class="btn btn-primary w-100 mb-2">
+                                <i class="bi bi-chat-dots"></i> Message Owner
+                            </a>
+                            
+                            <!-- Inquiry to Support Button -->
+                            <a href="{% url 'inquiry_form' listing.pk %}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="bi bi-envelope"></i> Send Inquiry to Support
                             </a>
                         {% else %}
-                            <div class="alert alert-success mb-0">
-                                <small><i class="bi bi-star-fill"></i> Boosted until {{ listing.boosted_until|date:"M d, Y" }}</small>
-                            </div>
+                            <!-- Owner Actions -->
+                            <a href="{% url 'edit_listing' listing.pk %}" class="btn btn-warning w-100 mb-2">
+                                <i class="bi bi-pencil"></i> Edit Listing
+                            </a>
+                            <a href="{% url 'bump_listing' listing.pk %}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="bi bi-arrow-up-circle"></i> Bump to Top
+                            </a>
+                            {% if not listing.is_boosted %}
+                                <a href="{% url 'boost_listing' listing.pk %}" class="btn btn-outline-success w-100">
+                                    <i class="bi bi-rocket"></i> Boost Listing
+                                </a>
+                            {% else %}
+                                <div class="alert alert-success mb-0">
+                                    <small><i class="bi bi-star-fill"></i> Boosted until {{ listing.boosted_until|date:"M d, Y" }}</small>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-primary w-100">Login to Contact</a>
+                        <!-- Not logged in -->
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary w-100 mb-2">Login to Contact</a>
+                        <a href="{% url 'signup' %}?next={{ request.path }}" class="btn btn-outline-primary w-100">Sign Up</a>
                     {% endif %}
                     
                     <hr>
@@ -280,7 +292,7 @@
     </div>
 </div>
 
-<!-- Contact Modal -->
+<!-- Contact Modal (Legacy - keeping for backward compatibility) -->
 <div class="modal fade" id="contactModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -15,34 +15,224 @@
     <!-- Leaflet CSS for Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     
     {% block extra_css %}{% endblock %}
     
     <style>
+        /* Pillow Housing Brand Color Scheme */
+        :root {
+            /* Brand Colors */
+            --primary-purple: #5a2c8a;
+            --primary-purple-light: #6d3996;
+            --accent-lavender: #d0aee4;
+            --neutral-gray: #d8d5d5;
+            --text-black: #000000;
+            --white: #ffffff;
+            
+            /* Backgrounds */
+            --background: #fafaf9;
+            --surface: #ffffff;
+            
+            /* Text Colors */
+            --text-primary: #000000;
+            --text-secondary: #4a4a4a;
+            --text-muted: #6b7280;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(90, 44, 138, 0.08);
+            --shadow-md: 0 4px 12px rgba(90, 44, 138, 0.12);
+            --shadow-lg: 0 12px 32px rgba(90, 44, 138, 0.18);
+        }
+        
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 15px;
         }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: var(--white) !important;
+            border-bottom: 1px solid var(--neutral-gray);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem 0;
+        }
+        
         .navbar-brand {
-            font-weight: bold;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
             font-size: 1.5rem;
+            color: var(--primary-purple) !important;
         }
+        
+        .navbar-brand img {
+            height: 45px;
+            transition: transform 0.2s;
+        }
+        
+        .navbar-brand:hover img {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-purple) !important;
+            background-color: rgba(90, 44, 138, 0.05);
+        }
+        
+        /* Buttons */
+        .btn {
+            font-weight: 500;
+            border-radius: 10px;
+            padding: 0.625rem 1.25rem;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-purple);
+            color: white;
+            box-shadow: 0 2px 8px rgba(90, 44, 138, 0.25);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(90, 44, 138, 0.4);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-purple);
+            border: 2px solid var(--primary-purple);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-purple);
+            border-color: var(--primary-purple);
+            color: white;
+        }
+        
+        /* Cards */
+        .card {
+            background-color: var(--surface);
+            border: 1px solid var(--neutral-gray);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
         .listing-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s;
+            text-decoration: none;
         }
+        
         .listing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Forms */
+        .form-control, .form-select {
+            border: 2px solid var(--neutral-gray);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(90, 44, 138, 0.1);
+            outline: none;
+        }
+        
+        /* Badges */
+        .badge {
+            font-weight: 600;
+            padding: 0.5rem 0.875rem;
+            border-radius: 8px;
+        }
+        
+        .bg-warning {
+            background-color: #f59e0b !important;
+        }
+        
+        /* Alerts */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Dropdown */
+        .dropdown-menu {
+            border: 1px solid var(--neutral-gray);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(90, 44, 138, 0.05);
+            color: var(--primary-purple);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary-purple);
+            color: white;
+            margin-top: 4rem;
+        }
+        
+        footer a {
+            color: var(--accent-lavender);
+            transition: all 0.2s;
+        }
+        
+        footer a:hover {
+            color: white;
         }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
-            <a class="navbar-brand text-primary" href="{% url 'landing' %}">
-                <i class="bi bi-house-heart-fill"></i> Pillow Housing
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'landing' %}">
+                <img src="{% static 'images/logo.jpg' %}" alt="Pillow Housing">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -95,7 +285,7 @@
                             <a class="nav-link" href="{% url 'login' %}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-primary text-white ms-2" href="{% url 'signup' %}">Sign Up</a>
+                            <a class="btn btn-primary text-white ms-2" href="{% url 'signup' %}">Sign Up</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -121,33 +311,33 @@
     </main>
     
     <!-- Footer -->
-    <footer class="bg-dark text-white mt-5 py-4">
+    <footer class="text-white py-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <h5><i class="bi bi-house-heart-fill"></i> Pillow Housing</h5>
-                    <p class="text-muted">Student sublets made easy</p>
+                    <p style="color: var(--accent-lavender);">Student sublets made easy. Trusted by thousands of students nationwide.</p>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <h6>Quick Links</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'landing' %}" class="text-white text-decoration-none">Home</a></li>
-                        <li><a href="{% url 'search_results' %}" class="text-white text-decoration-none">Browse Listings</a></li>
+                        <li class="mb-2"><a href="{% url 'landing' %}" class="text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'search_results' %}" class="text-decoration-none">Browse Listings</a></li>
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'create_listing' %}" class="text-white text-decoration-none">Post Listing</a></li>
+                            <li class="mb-2"><a href="{% url 'create_listing' %}" class="text-decoration-none">Post Listing</a></li>
                         {% endif %}
                     </ul>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <h6>Connect</h6>
-                    <p class="text-muted">
+                    <p style="color: var(--accent-lavender);">
                         <i class="bi bi-envelope"></i> support@pillowhousing.com<br>
                         <i class="bi bi-phone"></i> (555) 123-4567
                     </p>
                 </div>
             </div>
-            <hr class="bg-secondary">
-            <div class="text-center text-muted">
+            <hr style="background-color: rgba(255,255,255,0.2); border: none; height: 1px;">
+            <div class="text-center mt-3" style="color: var(--accent-lavender);">
                 <small>&copy; 2026 Pillow Housing. All rights reserved.</small>
             </div>
         </div>
@@ -156,7 +346,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Leaflet JS for Maps -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     {% block extra_js %}{% endblock %}

@@ -3,12 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from .models import Listing, SavedListing, ContactMessage, ListingImage
+from .models import Listing, SavedListing, ContactMessage, ListingImage, Message
 from .forms import ListingForm, ContactForm
 from django.http import HttpResponse
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from datetime import datetime
+from django.conf import settings
+from django.urls import reverse
 
 
 def landing(request):
@@ -23,6 +26,8 @@ def search_results(request):
     
     # Get query parameters
     location = request.GET.get('location', '')
+    start_date = request.GET.get('start_date', '')
+    end_date = request.GET.get('end_date', '')
     duration = request.GET.get('duration', '')
     beds = request.GET.get('beds', '')
     max_price = request.GET.get('max_price', '')
@@ -37,6 +42,20 @@ def search_results(request):
             Q(zip_code__icontains=location)
         )
     
+    if start_date:
+        try:
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            listings = listings.filter(lease_start__lte=start_date_obj)
+        except:
+            pass
+    
+    if end_date:
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+            listings = listings.filter(lease_end__gte=end_date_obj)
+        except:
+            pass
+    
     if duration:
         listings = listings.filter(duration_type=duration)
     
@@ -47,7 +66,10 @@ def search_results(request):
             listings = listings.filter(beds=int(beds))
     
     if max_price:
-        listings = listings.filter(rent__lte=float(max_price))
+        if max_price == '2500':  # Over $2,000
+            listings = listings.filter(rent__gt=2000)
+        else:
+            listings = listings.filter(rent__lte=float(max_price))
     
     if listing_type:
         listings = listings.filter(listing_type=listing_type)
@@ -68,6 +90,8 @@ def search_results(request):
     context = {
         'page_obj': page_obj,
         'location': location,
+        'start_date': start_date,
+        'end_date': end_date,
         'duration': duration,
         'beds': beds,
         'max_price': max_price,
@@ -295,3 +319,216 @@ def stripe_webhook(request):
         listing.save()
     
     return HttpResponse(status=200)
+
+
+# ============ MESSAGING SYSTEM ============
+
+@login_required
+def send_message(request, pk):
+    """Send message to listing owner"""
+    listing = get_object_or_404(Listing, pk=pk)
+    
+    # Prevent self-messaging
+    if request.user == listing.owner:
+        messages.error(request, 'You cannot message yourself.')
+        return redirect('listing_detail', pk=pk)
+    
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        body = request.POST.get('body')
+        
+        # Create message
+        message = Message.objects.create(
+            listing=listing,
+            sender=request.user,
+            recipient=listing.owner,
+            subject=subject,
+            body=body
+        )
+        
+        # Send email notification to recipient
+        try:
+            send_mail(
+                subject=f'New message about your listing: {listing.title}',
+                message=f'''
+Hello {listing.owner.username},
+
+You have received a new message about your listing "{listing.title}":
+
+From: {request.user.username} ({request.user.email})
+Subject: {subject}
+
+Message:
+{body}
+
+---
+Reply to this message at: {request.build_absolute_uri(reverse('message_detail', args=[message.pk]))}
+
+Pillow Housing Team
+                ''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[listing.owner.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"Email error: {e}")
+        
+        messages.success(request, 'Your message has been sent!')
+        return redirect('inbox')
+    
+    context = {
+        'listing': listing,
+    }
+    return render(request, 'listings/send_message.html', context)
+
+
+@login_required
+def inbox(request):
+    """View user's messages"""
+    received = Message.objects.filter(recipient=request.user)
+    sent = Message.objects.filter(sender=request.user)
+    
+    # Count unread
+    unread_count = received.filter(is_read=False).count()
+    
+    context = {
+        'received_messages': received,
+        'sent_messages': sent,
+        'unread_count': unread_count,
+    }
+    return render(request, 'listings/inbox.html', context)
+
+
+@login_required
+def message_detail(request, pk):
+    """View and reply to a message"""
+    message = get_object_or_404(Message, pk=pk)
+    
+    # Check permissions
+    if message.recipient != request.user and message.sender != request.user:
+        messages.error(request, 'You do not have permission to view this message.')
+        return redirect('inbox')
+    
+    # Mark as read if recipient
+    if message.recipient == request.user and not message.is_read:
+        message.is_read = True
+        message.save()
+    
+    # Get conversation thread
+    if message.parent_message:
+        thread = Message.objects.filter(
+            Q(pk=message.parent_message.pk) | 
+            Q(parent_message=message.parent_message)
+        ).order_by('created_at')
+    else:
+        thread = Message.objects.filter(
+            Q(pk=message.pk) | 
+            Q(parent_message=message)
+        ).order_by('created_at')
+    
+    # Handle reply
+    if request.method == 'POST':
+        reply_body = request.POST.get('reply_body')
+        
+        # Determine recipient (opposite of current user)
+        reply_recipient = message.sender if message.recipient == request.user else message.recipient
+        
+        reply_message = Message.objects.create(
+            listing=message.listing,
+            sender=request.user,
+            recipient=reply_recipient,
+            subject=f'Re: {message.subject}',
+            body=reply_body,
+            parent_message=message.parent_message or message
+        )
+        
+        # Send email notification
+        try:
+            send_mail(
+                subject=f'Reply to: {message.subject}',
+                message=f'''
+Hello {reply_recipient.username},
+
+{request.user.username} replied to your message:
+
+{reply_body}
+
+---
+View conversation at: {request.build_absolute_uri(reverse('message_detail', args=[reply_message.pk]))}
+
+Pillow Housing Team
+                ''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[reply_recipient.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"Email error: {e}")
+        
+        messages.success(request, 'Reply sent!')
+        return redirect('message_detail', pk=reply_message.pk)
+    
+    context = {
+        'message': message,
+        'thread': thread,
+    }
+    return render(request, 'listings/message_detail.html', context)
+
+
+@login_required
+def inquiry_form(request, pk):
+    """Send inquiry to support about a listing"""
+    listing = get_object_or_404(Listing, pk=pk)
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone', '')
+        message_text = request.POST.get('message')
+        
+        # Validate .edu email
+        if not email.endswith('.edu'):
+            messages.error(request, 'Please use your .edu email address.')
+            return redirect('inquiry_form', pk=pk)
+        
+        # Send email to support
+        subject = f'Inquiry about: {listing.title}'
+        email_message = f'''
+New inquiry from Pillow Housing:
+
+Listing: {listing.title}
+Listing URL: {request.build_absolute_uri(reverse('listing_detail', args=[listing.pk]))}
+Listing Owner: {listing.owner.username} ({listing.owner.email})
+
+---
+Inquiry From:
+Name: {name}
+Pillow Account: {request.user.username}
+.EDU Email: {email}
+Phone: {phone}
+
+Message:
+{message_text}
+
+---
+This inquiry was sent from their verified .edu email address.
+'''
+        
+        try:
+            send_mail(
+                subject=subject,
+                message=email_message,
+                from_email=email,  # From user's .edu email
+                recipient_list=['support@pillowhousing.com'],
+                fail_silently=False,
+            )
+            messages.success(request, 'Your inquiry has been sent to our support team! We will respond within 24 hours.')
+            return redirect('listing_detail', pk=pk)
+        except Exception as e:
+            messages.error(request, f'Error sending inquiry: {str(e)}. Please try again.')
+            print(f"Email error: {e}")
+    
+    context = {
+        'listing': listing,
+    }
+    return render(request, 'listings/inquiry_form.html', context)

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages - Pillow Housing{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">
+        <i class="bi bi-envelope"></i> Messages
+        {% if unread_count > 0 %}
+            <span class="badge bg-danger">{{ unread_count }} unread</span>
+        {% endif %}
+    </h2>
+    
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#received">
+                <i class="bi bi-inbox"></i> Received ({{ received_messages.count }})
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sent">
+                <i class="bi bi-send"></i> Sent ({{ sent_messages.count }})
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content">
+        <!-- Received Messages -->
+        <div class="tab-pane fade show active" id="received">
+            {% if received_messages %}
+                <div class="list-group">
+                    {% for message in received_messages %}
+                        <a href="{% url 'message_detail' message.pk %}" class="list-group-item list-group-item-action {% if not message.is_read %}list-group-item-primary{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1 {% if not message.is_read %}fw-bold{% endif %}">
+                                            {{ message.subject }}
+                                            {% if not message.is_read %}
+                                                <span class="badge bg-danger">New</span>
+                                            {% endif %}
+                                        </h6>
+                                        <small class="text-muted">{{ message.created_at|date:"M d, g:i A" }}</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">From: <strong>{{ message.sender.username }}</strong></p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-house"></i> Re: {{ message.listing.title }}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No messages received yet
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sent Messages -->
+        <div class="tab-pane fade" id="sent">
+            {% if sent_messages %}
+                <div class="list-group">
+                    {% for message in sent_messages %}
+                        <a href="{% url 'message_detail' message.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">{{ message.subject }}</h6>
+                                        <small class="text-muted">{{ message.created_at|date:"M d, g:i A" }}</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">To: <strong>{{ message.recipient.username }}</strong></p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-house"></i> Re: {{ message.listing.title }}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No sent messages yet
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

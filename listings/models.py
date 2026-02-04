@@ -172,8 +172,8 @@ class SavedListing(models.Model):
         unique_together = ('user', 'listing')
 
 class ContactMessage(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='contact_messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_contact_messages')
     sender_email = models.EmailField()
     sender_phone = models.CharField(max_length=20, blank=True)
     message = models.TextField()
@@ -182,3 +182,20 @@ class ContactMessage(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+class Message(models.Model):
+    """Message between users about a listing"""
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    parent_message = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='replies')
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.sender.username} to {self.recipient.username} - {self.subject[:30]}"

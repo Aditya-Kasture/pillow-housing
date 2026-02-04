@@ -15,4 +15,10 @@ urlpatterns = [
     path('my-listings/', views.my_listings, name='my_listings'),
     path('saved/', views.saved_listings, name='saved_listings'),
     path('listings/<int:pk>/toggle-save/', views.toggle_save, name='toggle_save'),
+    
+    # Messaging System
+    path('listings/<int:pk>/message/', views.send_message, name='send_message'),
+    path('listings/<int:pk>/inquiry/', views.inquiry_form, name='inquiry_form'),
+    path('inbox/', views.inbox, name='inbox'),
+    path('messages/<int:pk>/', views.message_detail, name='message_detail'),
 ]
