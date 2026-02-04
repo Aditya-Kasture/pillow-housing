@@ -15,8 +15,12 @@ if not os.getenv('RENDER'):
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-CHANGE-IN-PRODUCTION')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Allowed Hosts
-ALLOWED_HOSTS = ['*']
+#Allowed Hosts
+ALLOWED_HOSTS = [
+    'pillow-housing.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
