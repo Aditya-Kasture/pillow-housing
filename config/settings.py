@@ -3,23 +3,21 @@ from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
 
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Only load .env locally, not on Render
+if not os.getenv('RENDER'):
+    load_dotenv()
+
 
 # Security
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-CHANGE-IN-PRODUCTION')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Allowed Hosts - FIXED
-ALLOWED_HOSTS = [
-    '.vercel.app',
-    'localhost',
-    '127.0.0.1',
-    'pillowhousing.com',
-    'www.pillowhousing.com',
-    'pillowhousing.onrender.com',
-]
+# Allowed Hosts
+ALLOWED_HOSTS = ['*']
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -29,16 +27,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third-party
     'cloudinary_storage',
     'cloudinary',
-    
+
     # Local apps
     'accounts',
     'listings',
     'payments',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,7 +50,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'config.urls'
+
 
 TEMPLATES = [
     {
@@ -69,7 +70,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'config.wsgi.application'
+
 
 # Database
 DATABASES = {
@@ -80,6 +83,7 @@ DATABASES = {
     )
 }
 
+
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -88,11 +92,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'America/New_York'
 USE_I18N = True
 USE_TZ = True
+
 
 # Static files
 STATIC_URL = '/static/'
@@ -100,9 +106,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Cloudinary Configuration
 CLOUDINARY_STORAGE = {
@@ -114,21 +122,26 @@ CLOUDINARY_STORAGE = {
 if CLOUDINARY_STORAGE['CLOUD_NAME']:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
+
 
 # Authentication
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'landing'
 LOGOUT_REDIRECT_URL = 'landing'
 
+
 # Stripe Configuration
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
+
 
 # Email Configuration
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
@@ -139,8 +152,9 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Pillow Housing <noreply@pillowhousing.com>')
 
-# Production Security Settings (only if NOT on Vercel)
-if not DEBUG and not os.getenv('VERCEL'):
+
+# Production Security Settings
+if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
